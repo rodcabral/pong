@@ -30,6 +30,33 @@ bool init_game(Game* game, const char* title, int winW, int winH) {
     return true;
 }
 
+void setup(Game* game) {
+
+}
+
+void handle_input(Game* game) {
+    SDL_Event event;
+
+    SDL_PollEvent(&event);
+
+    switch(event.type) {
+        case SDL_QUIT:
+            game->is_running = false;
+            break;
+        case SDL_KEYDOWN:
+            switch(event.key.keysym.sym) {
+                case SDLK_ESCAPE:
+                    game->is_running = false;
+                    break;
+            }
+            break;
+    }
+}
+
+void update(Game* game) {
+
+}
+
 void render(Game* game) {
     SDL_SetRenderDrawColor(game->renderer, 0x00, 0x00, 0x00, 0xff);
     SDL_RenderClear(game->renderer);
