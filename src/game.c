@@ -1,5 +1,8 @@
-#include "game.h"
 #include <SDL2/SDL_video.h>
+#include "game.h"
+#include "object.h"
+
+Object example;
 
 bool init_game(Game* game, const char* title, int winW, int winH) {
     if(SDL_Init(SDL_INIT_EVERYTHING) < 0) { 
@@ -25,13 +28,11 @@ bool init_game(Game* game, const char* title, int winW, int winH) {
         return false;
     }
 
+    example = init_object(game->renderer, 10, 10, 20, 20); 
+
     game->is_running = true;
 
     return true;
-}
-
-void setup(Game* game) {
-
 }
 
 void handle_input(Game* game) {
@@ -53,13 +54,15 @@ void handle_input(Game* game) {
     }
 }
 
-void update(Game* game) {
-
+void update() {
+    example.rect.x++;
 }
 
 void render(Game* game) {
     SDL_SetRenderDrawColor(game->renderer, 0x00, 0x00, 0x00, 0xff);
     SDL_RenderClear(game->renderer);
+
+    render_object(&example);
 
     SDL_RenderPresent(game->renderer);
 }
