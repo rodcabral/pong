@@ -1,8 +1,8 @@
-#include <stdio.h>
+#include "game.h"
 
 int main(void) {
 
-    printf("Hello, world!\n");
+    init_game("Pong", 650, 650);
 
     return 0;
 }
