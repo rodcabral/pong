@@ -6,6 +6,8 @@
 
 Object center_bar[center_bar_total];
 
+Object player, adversary;
+
 bool init_game(Game* game, const char* title, int winW, int winH) {
     if(SDL_Init(SDL_INIT_EVERYTHING) < 0) { 
         
@@ -35,6 +37,14 @@ bool init_game(Game* game, const char* title, int winW, int winH) {
         center_bar[i] = init_object(game->renderer, 325, center_bar_start, 6, 6);
         center_bar_start = (center_bar_start + 8);
     }
+
+    int p_width = 8;
+    int p_height = 115;
+    int p_gap = 16;
+
+    player = init_object(game->renderer, p_gap, (WINDOW_HEIGHT / 2) - p_height / 2, p_width, p_height);
+
+    adversary = init_object(game->renderer, WINDOW_WIDTH - p_gap - p_width, (WINDOW_HEIGHT / 2) - p_height / 2, p_width, p_height);
 
     game->is_running = true;
 
@@ -70,6 +80,9 @@ void render(Game* game) {
     for(int i = 0; i < center_bar_total; ++i) {
         render_object(&center_bar[i]);
     }
+
+    render_object(&player);
+    render_object(&adversary);
 
     SDL_RenderPresent(game->renderer);
 }

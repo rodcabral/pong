@@ -1,6 +1,9 @@
 #ifndef _GAME_H_
 #define _GAME_H_
 
+#define WINDOW_WIDTH 650
+#define WINDOW_HEIGHT 650
+
 #include <SDL2/SDL.h>
 #include <stdbool.h>
 
