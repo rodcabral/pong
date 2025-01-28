@@ -74,6 +74,12 @@ void handle_input(Game* game) {
                 case SDLK_ESCAPE:
                     game->is_running = false;
                     break;
+                case SDLK_UP:
+                    player.rect.y -= 30;
+                    break;
+                case SDLK_DOWN:
+                    player.rect.y += 30;
+                    break;
             }
             break;
     }
