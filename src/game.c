@@ -74,14 +74,26 @@ void handle_input(Game* game) {
                 case SDLK_ESCAPE:
                     game->is_running = false;
                     break;
-                case SDLK_UP:
-                    player.rect.y -= 30;
-                    break;
-                case SDLK_DOWN:
-                    player.rect.y += 30;
-                    break;
             }
             break;
+    }
+
+    const Uint8* keys = SDL_GetKeyboardState(NULL);
+
+    if(keys[SDL_SCANCODE_UP]) {
+        player.rect.y -= 10;
+
+        if(player.rect.y <= 0) {
+            player.rect.y = 0;
+        }
+    }
+
+    if(keys[SDL_SCANCODE_DOWN]) {
+        player.rect.y += 10;
+
+        if(player.rect.y + player.rect.h > WINDOW_HEIGHT) {
+            player.rect.y = WINDOW_HEIGHT - player.rect.h;
+        }
     }
 }
 
