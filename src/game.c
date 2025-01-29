@@ -50,8 +50,8 @@ bool init_game(Game* game, const char* title, int winW, int winH) {
 
     adversary = init_object(game->renderer, WINDOW_WIDTH - p_gap - p_width, (WINDOW_HEIGHT / 2) - p_height / 2, p_width, p_height);
 
-    int b_x = player.x + 200;
-    int b_y = rand() % WINDOW_HEIGHT;
+    int b_x = WINDOW_WIDTH / 2;
+    int b_y = rand() % WINDOW_HEIGHT - ball.rect.h;
 
     ball = init_object(game->renderer, b_x, b_y, 11, 11);
 
