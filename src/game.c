@@ -10,6 +10,14 @@ Object center_bar[center_bar_total];
 
 Object player, adversary, ball;
 
+int ballX = 5;
+int ballY = 5;
+
+void reset_ball() {
+    ball.rect.x = WINDOW_WIDTH / 2;
+    ball.rect.y = rand() % WINDOW_HEIGHT - ball.rect.h;
+}
+
 bool init_game(Game* game, const char* title, int winW, int winH) {
     srand(time(NULL));
 
@@ -98,6 +106,46 @@ void handle_input(Game* game) {
 }
 
 void update() {
+    ball.rect.x += ballX;
+    ball.rect.y += ballY;
+
+    if(ball.rect.x >= WINDOW_WIDTH - ball.rect.w) {
+        printf("Player scores!\n");
+        reset_ball();
+    }
+
+    if(ball.rect.x <= 0) {
+        printf("Adversary scores!\n");
+        reset_ball();
+    }
+
+    // PLAYER COLLIDER
+    if((ball.rect.x <= player.rect.x + player.rect.w) && (ball.rect.y >= player.rect.y) && (ball.rect.y <= player.rect.y + player.rect.h)) {
+        ballX = 5;
+        ballY = -5;
+
+        if(ball.rect.y >= player.rect.y + player.rect.h / 2) {
+            ballY = 5;
+        }
+    }
+
+    // ADVERSARY COLLIDER
+    if((ball.rect.x >= adversary.rect.x - adversary.rect.w) && (ball.rect.y >= adversary.rect.y) && (ball.rect.y <= adversary.rect.y + adversary.rect.h)) {
+        ballX = -5;
+        ballY = -5;
+
+        if(ball.rect.y >= adversary.rect.y + adversary.rect.h / 2) {
+            ballY = 5;
+        }
+    }
+
+    if(ball.rect.y <= 0) {
+        ballY = 5;
+    }
+
+    if(ball.rect.y >= WINDOW_HEIGHT - ball.rect.h) {
+        ballY = -5;
+    }
 }
 
 void render(Game* game) {
