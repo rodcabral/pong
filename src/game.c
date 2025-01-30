@@ -119,32 +119,46 @@ void update() {
         reset_ball();
     }
 
-    // PLAYER COLLIDER
     if((ball.rect.x <= player.rect.x + player.rect.w) && (ball.rect.y >= player.rect.y) && (ball.rect.y <= player.rect.y + player.rect.h)) {
-        ballX = 5;
-        ballY = -5;
+        ballX = 10;
+        ballY = -10;
 
         if(ball.rect.y >= player.rect.y + player.rect.h / 2) {
-            ballY = 5;
+            ballY = 10;
         }
     }
 
-    // ADVERSARY COLLIDER
     if((ball.rect.x >= adversary.rect.x - adversary.rect.w) && (ball.rect.y >= adversary.rect.y) && (ball.rect.y <= adversary.rect.y + adversary.rect.h)) {
-        ballX = -5;
-        ballY = -5;
+        ballX = -10;
+        ballY = -10;
 
         if(ball.rect.y >= adversary.rect.y + adversary.rect.h / 2) {
-            ballY = 5;
+            ballY = 10;
         }
     }
 
     if(ball.rect.y <= 0) {
-        ballY = 5;
+        ballY = 10;
     }
 
     if(ball.rect.y >= WINDOW_HEIGHT - ball.rect.h) {
-        ballY = -5;
+        ballY = -10;
+    }
+
+    if(ball.rect.y >= WINDOW_HEIGHT / 2) {
+        adversary.rect.y += 20;
+    }
+
+    if(ball.rect.y <= WINDOW_HEIGHT / 2) {
+        adversary.rect.y -= 20;
+    }
+    
+    if(adversary.rect.y <= 0) {
+        adversary.rect.y = 0;
+    }
+
+    if(adversary.rect.y + adversary.rect.h > WINDOW_HEIGHT) {
+        adversary.rect.y = WINDOW_HEIGHT - adversary.rect.h;
     }
 }
 
