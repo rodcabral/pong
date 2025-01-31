@@ -3,6 +3,7 @@
 #include <SDL2/SDL_video.h>
 #include "game.h"
 #include "object.h"
+#include "load_font.h"
 
 #define center_bar_total (650 / 8)
 
@@ -10,15 +11,21 @@ Object center_bar[center_bar_total];
 
 Object player, adversary, ball;
 
-int base_speed = 20;
-int ball_base_speed = 9;
+int base_speed = 18;
+int ball_base_speed = 10;
 
 int ballX = 5;
 int ballY = 3;
 
-int check;
+int check = 1;
 
-void reset_ball() {
+int p_width = 8;
+int p_height = 128;
+int p_gap = 16;
+
+int player_score, adversary_score = 0;
+
+void reset_pos() {
     ball.rect.x = WINDOW_WIDTH / 2;
     ball.rect.y = rand() % WINDOW_HEIGHT - ball.rect.h;
 
@@ -35,15 +42,17 @@ void handle_ball() {
     ball.rect.y += ballY;
 
     if(ball.rect.x >= WINDOW_WIDTH - ball.rect.w) {
-        printf("Player scores!\n");
         check = 1;
-        reset_ball();
+
+        player_score++;
+        reset_pos();
     }
 
     if(ball.rect.x <= 0) {
-        printf("Adversary scores!\n");
         check = 0;
-        reset_ball();
+
+        adversary_score++;
+        reset_pos();
     } 
 
     if(ball.rect.y <= 0) {
@@ -72,7 +81,7 @@ void handle_adversary() {
         ballY = ball_base_speed * -1;
 
         if(ball.rect.y >= adversary.rect.y + adversary.rect.h / 2) {
-            ballY = ball_base_speed;
+            ballY = ball_base_speed - 3;
         }
     }
 
@@ -103,6 +112,8 @@ bool init_game(Game* game, const char* title, int winW, int winH) {
         return false;
     }
 
+    TTF_Init();
+
     game->window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, winW, winH, SDL_WINDOW_SHOWN);
 
     if(!game->window) {
@@ -125,18 +136,17 @@ bool init_game(Game* game, const char* title, int winW, int winH) {
         center_bar_start = (center_bar_start + 8);
     }
 
-    int p_width = 8;
-    int p_height = 128;
-    int p_gap = 16;
+    player = init_object(game->renderer, 0, 0, p_width, p_height);
+    adversary = init_object(game->renderer, 0, 0, p_width, p_height);
+    ball = init_object(game->renderer, 0, 0, 15, 15);
 
-    player = init_object(game->renderer, p_gap, (WINDOW_HEIGHT / 2) - p_height / 2, p_width, p_height);
+    player.rect.x = p_gap; 
+    player.rect.y = (WINDOW_HEIGHT / 2) - p_height / 2;
 
-    adversary = init_object(game->renderer, WINDOW_WIDTH - p_gap - p_width, (WINDOW_HEIGHT / 2) - p_height / 2, p_width, p_height);
+    adversary.rect.x = WINDOW_WIDTH - p_gap - p_width;
+    adversary.rect.y = (WINDOW_HEIGHT / 2) - p_height / 2;
 
-    int b_x = WINDOW_WIDTH / 2;
-    int b_y = rand() % WINDOW_HEIGHT - ball.rect.h;
-
-    ball = init_object(game->renderer, b_x, b_y, 11, 11);
+    reset_pos();
 
     game->is_running = true;
 
@@ -199,6 +209,13 @@ void render(Game* game) {
     render_object(&player);
     render_object(&adversary);
     render_object(&ball);
+
+    char f_buffer[1000];
+    snprintf(f_buffer, 1000, "%d", player_score);
+    load_font(game->renderer, "fonts/dogicapixel.ttf", f_buffer, 60, (WINDOW_WIDTH / 4) - 20, 30);
+
+    snprintf(f_buffer, 1000, "%d", adversary_score);
+    load_font(game->renderer, "fonts/dogicapixel.ttf", f_buffer, 60, WINDOW_WIDTH - WINDOW_WIDTH / 4 - 20, 30);
 
     SDL_RenderPresent(game->renderer);
 }
