@@ -18,7 +18,7 @@ bool init_game(Game* game, const char* title, int winW, int winH);
 
 void handle_input(Game* game);
 
-void update();
+void update(Game* game);
 
 void render(Game* game);
 

@@ -190,12 +190,22 @@ void handle_input(Game* game) {
     }
 }
 
-void update() {
+void update(Game* game) {
     handle_ball();
 
     handle_player();
 
     handle_adversary(); 
+
+    if(player_score == 10) {
+        printf("Player won!\n");
+        game->is_running = false;
+    }
+
+    if(adversary_score == 10) {
+        printf("Adversary won!\n");
+        game->is_running = false;
+    }
 }
 
 void render(Game* game) {
