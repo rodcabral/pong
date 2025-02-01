@@ -5,23 +5,19 @@
 #include "object.h"
 #include "load_font.h"
 
-#define center_bar_total (650 / 8)
-
-Object center_bar[center_bar_total];
-
 Object player, adversary, ball;
 
-int base_speed = 18;
-int ball_base_speed = 10;
+const int p_width = 10;
+const int p_height = 100;
+const int p_gap = 18;
+
+int base_speed = 10;
+int ball_base_speed = 6;
 
 int ballX = 5;
 int ballY = 3;
 
 int check = 1;
-
-int p_width = 8;
-int p_height = 128;
-int p_gap = 16;
 
 int player_score, adversary_score = 0;
 
@@ -29,11 +25,11 @@ void reset_pos() {
     ball.rect.x = WINDOW_WIDTH / 2;
     ball.rect.y = rand() % WINDOW_HEIGHT - ball.rect.h;
 
-    ballY = 3;
+    ballY = 2;
     if(check) {
-        ballX = -5;
+        ballX = -2;
     } else {
-        ballX = 5;
+        ballX = 2;
     }
 }
 
@@ -64,14 +60,52 @@ void handle_ball() {
     }
 }
 
+void check_hit(Object* object) {
+        int where_hit = object->rect.y + object->rect.h - ball.rect.y;
+
+        if (where_hit >= 0 && where_hit < 7) {
+            ballY = 4;
+        }
+
+        if (where_hit >= 7 && where_hit < 14) {
+            ballY = 3;
+        }
+        
+        if (where_hit >= 14 && where_hit < 21) {
+            ballY = 2;
+        }
+
+        if (where_hit >= 21 && where_hit < 28) {
+            ballY = 1;
+        }
+
+        if (where_hit >= 28 && where_hit < 32) {
+            ballY = 0;
+        }
+
+        if (where_hit >= 32 && where_hit < 39) {
+            ballY = -1;
+        }
+
+        if (where_hit >= 39 && where_hit < 46) {
+            ballY = -2;
+        }
+
+        if (where_hit >= 46 && where_hit < 53) {
+            ballY = -3;
+        }
+
+        if (where_hit >= 53 && where_hit <= 60) {
+            ballY = -4;
+        }
+}
+
 void handle_player() {
     if((ball.rect.x <= player.rect.x + player.rect.w) && (ball.rect.y >= player.rect.y) && (ball.rect.y <= player.rect.y + player.rect.h)) {
         ballX = ball_base_speed;
         ballY = ball_base_speed  * -1;
 
-        if(ball.rect.y >= player.rect.y + player.rect.h / 2) {
-            ballY = ball_base_speed - 3;
-        }
+        check_hit(&player);        
     }
 }
 
@@ -80,16 +114,12 @@ void handle_adversary() {
         ballX = ball_base_speed * -1;
         ballY = ball_base_speed * -1;
 
-        if(ball.rect.y >= adversary.rect.y + adversary.rect.h / 2) {
-            ballY = ball_base_speed - 3;
-        }
+        check_hit(&adversary);
     }
 
-    if(ball.rect.y >= WINDOW_HEIGHT / 2) {
+    if(ball.rect.y + ball.rect.h >= WINDOW_HEIGHT / 2) {
         adversary.rect.y += base_speed;
-    }
-
-    if(ball.rect.y <= WINDOW_HEIGHT / 2) {
+    } else {
         adversary.rect.y -= base_speed;
     }
 
@@ -128,12 +158,6 @@ bool init_game(Game* game, const char* title, int winW, int winH) {
         fprintf(stderr, "Could not create: renderer\n");
 
         return false;
-    }
-
-    int center_bar_start = 1;
-    for(int i = 0; i < center_bar_total; ++i) {
-        center_bar[i] = init_object(game->renderer, 325, center_bar_start, 6, 6);
-        center_bar_start = (center_bar_start + 8);
     }
 
     player = init_object(game->renderer, 0, 0, p_width, p_height);
@@ -212,8 +236,15 @@ void render(Game* game) {
     SDL_SetRenderDrawColor(game->renderer, 0x00, 0x00, 0x00, 0xff);
     SDL_RenderClear(game->renderer);
 
-    for(int i = 0; i < center_bar_total; ++i) {
-        render_object(&center_bar[i]);
+    for(int i = 1; i < WINDOW_HEIGHT / 26; ++i) {
+        SDL_Rect rect = {
+            .x = WINDOW_WIDTH / 2 + 8 / 2,
+            .y = i * 26,
+            .w = 5,
+            .h = 13,
+        };
+        SDL_SetRenderDrawColor(game->renderer, 0xff, 0xff, 0xff, 0xff);
+        SDL_RenderFillRect(game->renderer, &rect);
     }
 
     render_object(&player);
@@ -222,10 +253,10 @@ void render(Game* game) {
 
     char f_buffer[1000];
     snprintf(f_buffer, 1000, "%d", player_score);
-    load_font(game->renderer, "fonts/dogicapixel.ttf", f_buffer, 60, (WINDOW_WIDTH / 4) - 20, 30);
+    load_font(game->renderer, "fonts/dogicapixel.ttf", f_buffer, 50, WINDOW_WIDTH / 2 - 32 - 50, 20);
 
     snprintf(f_buffer, 1000, "%d", adversary_score);
-    load_font(game->renderer, "fonts/dogicapixel.ttf", f_buffer, 60, WINDOW_WIDTH - WINDOW_WIDTH / 4 - 20, 30);
+    load_font(game->renderer, "fonts/dogicapixel.ttf", f_buffer, 50, WINDOW_WIDTH / 2 + 50, 20);
 
     SDL_RenderPresent(game->renderer);
 }
