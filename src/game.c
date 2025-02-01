@@ -5,7 +5,7 @@
 #include "object.h"
 #include "load_font.h"
 
-Object player, adversary, ball;
+Object player, bot, ball;
 
 const int p_width = 10;
 const int p_height = 100;
@@ -19,7 +19,7 @@ int ballY = 3;
 
 int check = 1;
 
-int player_score, adversary_score = 0;
+int player_score, bot_score = 0;
 
 void reset_pos() {
     ball.rect.x = WINDOW_WIDTH / 2;
@@ -47,7 +47,7 @@ void handle_ball() {
     if(ball.rect.x <= 0) {
         check = 0;
 
-        adversary_score++;
+        bot_score++;
         reset_pos();
     } 
 
@@ -109,26 +109,26 @@ void handle_player() {
     }
 }
 
-void handle_adversary() {
-    if((ball.rect.x >= adversary.rect.x - adversary.rect.w) && (ball.rect.y >= adversary.rect.y) && (ball.rect.y <= adversary.rect.y + adversary.rect.h)) {
+void handle_bot() {
+    if((ball.rect.x >= bot.rect.x - bot.rect.w) && (ball.rect.y >= bot.rect.y) && (ball.rect.y <= bot.rect.y + bot.rect.h)) {
         ballX = ball_base_speed * -1;
         ballY = ball_base_speed * -1;
 
-        check_hit(&adversary);
+        check_hit(&bot);
     }
 
     if(ball.rect.y + ball.rect.h >= WINDOW_HEIGHT / 2) {
-        adversary.rect.y += base_speed;
+        bot.rect.y += base_speed;
     } else {
-        adversary.rect.y -= base_speed;
+        bot.rect.y -= base_speed;
     }
 
-    if(adversary.rect.y <= 0) {
-        adversary.rect.y = 0;
+    if(bot.rect.y <= 0) {
+        bot.rect.y = 0;
     }
 
-    if(adversary.rect.y + adversary.rect.h > WINDOW_HEIGHT) {
-        adversary.rect.y = WINDOW_HEIGHT - adversary.rect.h;
+    if(bot.rect.y + bot.rect.h > WINDOW_HEIGHT) {
+        bot.rect.y = WINDOW_HEIGHT - bot.rect.h;
     }
 }
 
@@ -161,14 +161,14 @@ bool init_game(Game* game, const char* title, int winW, int winH) {
     }
 
     player = init_object(game->renderer, 0, 0, p_width, p_height);
-    adversary = init_object(game->renderer, 0, 0, p_width, p_height);
+    bot = init_object(game->renderer, 0, 0, p_width, p_height);
     ball = init_object(game->renderer, 0, 0, 15, 15);
 
     player.rect.x = p_gap; 
     player.rect.y = (WINDOW_HEIGHT / 2) - p_height / 2;
 
-    adversary.rect.x = WINDOW_WIDTH - p_gap - p_width;
-    adversary.rect.y = (WINDOW_HEIGHT / 2) - p_height / 2;
+    bot.rect.x = WINDOW_WIDTH - p_gap - p_width;
+    bot.rect.y = (WINDOW_HEIGHT / 2) - p_height / 2;
 
     reset_pos();
 
@@ -219,14 +219,14 @@ void update(Game* game) {
 
     handle_player();
 
-    handle_adversary(); 
+    handle_bot(); 
 
     if(player_score == 10) {
         printf("Player won!\n");
         game->is_running = false;
     }
 
-    if(adversary_score == 10) {
+    if(bot_score == 10) {
         printf("Adversary won!\n");
         game->is_running = false;
     }
@@ -248,14 +248,14 @@ void render(Game* game) {
     }
 
     render_object(&player);
-    render_object(&adversary);
+    render_object(&bot);
     render_object(&ball);
 
     char f_buffer[1000];
     snprintf(f_buffer, 1000, "%d", player_score);
     load_font(game->renderer, "fonts/dogicapixel.ttf", f_buffer, 50, WINDOW_WIDTH / 2 - 32 - 50, 20);
 
-    snprintf(f_buffer, 1000, "%d", adversary_score);
+    snprintf(f_buffer, 1000, "%d", bot_score);
     load_font(game->renderer, "fonts/dogicapixel.ttf", f_buffer, 50, WINDOW_WIDTH / 2 + 50, 20);
 
     SDL_RenderPresent(game->renderer);
